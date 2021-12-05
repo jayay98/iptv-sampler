@@ -1,0 +1,5 @@
+FROM node:alpine
+WORKDIR /app
+RUN yarn global add serve
+COPY build/ /app/build/
+CMD [ "serve", "-s", "build" ]

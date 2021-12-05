@@ -1,0 +1,218 @@
+[
+    {
+        "name": "A1台",
+        "logo": "https://atv-cdn.hkatv.vip/images/16341146314628622757.png",
+        "url": "https://jc-qlive-play.jingchangkan.cn/live/3473_200508855_xR9m.m3u8",
+        "category": "General",
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "A1Tai.hk",
+            "name": "A1台",
+            "url": null
+        }
+    },
+    {
+        "name": "ViuTV",
+        "logo": "https://static.epg.best/hk/ViuTV96.hk.png",
+        "url": "https://cdn.hkdtmb.com/hls/99/index.m3u8",
+        "category": null,
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "ViuTV.hk",
+            "name": "ViuTV",
+            "url": "https://iptv-org.github.io/epg/guides/hk-en/nowplayer.now.com.epg.xml"
+        }
+    },
+    {
+        "name": "港台電視31",
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/RTHK_TV_31.svg/1200px-RTHK_TV_31.svg.png",
+        "url": "https://www.rthk.hk/feeds/dtt/rthktv31_https.m3u8",
+        "category": "General",
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "GangTaiDianShi31.hk",
+            "name": "港台電視31",
+            "url": null
+        }
+    },
+    {
+        "name": "港台電視32",
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/RTHK_TV_32.svg/1200px-RTHK_TV_32.svg.png",
+        "url": "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8",
+        "category": "News",
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "GangTaiDianShi32.hk",
+            "name": "港台電視32",
+            "url": null
+        }
+    },
+    {
+        "name": "澳門綜藝",
+        "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/TDM_Entertainment.png/640px-TDM_Entertainment.png",
+        "url": "http://live4.tdm.com.mo/ch6/_definst_/hd_ch6.live/playlist.m3u8",
+        "category": null,
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "mo",
+                "name": "Macao"
+            }
+        ],
+        "tvg": {
+            "id": "AoMenZongYi.mo",
+            "name": "澳門綜藝",
+            "url": null
+        }
+    },
+    {
+        "name": "翡翠台（81）",
+        "logo": "http://img.tvb.com/corporate/_fck_/image/Jade_logo_L(1).jpg",
+        "url": "http://61.238.6.49:8000/bysid/1",
+        "category": null,
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "FeiCuiTai81.hk",
+            "name": "翡翠台（81）",
+            "url": null
+        }
+    },
+    {
+        "name": "耀才財經台",
+        "logo": "https://i.imgur.com/xliVoIt.jpg?1",
+        "url": "http://202.69.67.66:443/webcast/bshdlive-pc/playlist.m3u8",
+        "category": "Shop",
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "YaoCaiCaiJingTai.hk",
+            "name": "耀才財經台",
+            "url": null
+        }
+    },
+    {
+        "name": "香港开电视 / HKSTV-HKS",
+        "logo": "https://upload.wikimedia.org/wikipedia/zh/e/ed/HK_open_tv_logo.jpg",
+        "url": "http://media.fantv.hk/m3u8/archive/channel2.m3u8",
+        "category": null,
+        "languages": [
+            {
+                "code": "zho",
+                "name": "Chinese"
+            },
+            {
+                "code": "yue",
+                "name": "Yue Chinese"
+            }
+        ],
+        "countries": [
+            {
+                "code": "hk",
+                "name": "Hong Kong"
+            }
+        ],
+        "tvg": {
+            "id": "XiangGangKaiDianShiHKSTVHKS.hk",
+            "name": "香港开电视 / HKSTV-HKS",
+            "url": null
+        }
+    }
+]
