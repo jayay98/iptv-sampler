@@ -7,4 +7,4 @@ FROM node:14-alpine as app
 WORKDIR /app
 COPY --from=builder /builder/build /app/build/
 RUN yarn global add serve
-CMD [ "serve", "-s", "build", "-l", "$PORT" ]
+CMD [ "sh", "-c", "serve -s build -l $PORT" ]
