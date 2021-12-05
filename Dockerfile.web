@@ -1,5 +1,10 @@
-FROM node:alpine
+FROM node:14-alpine AS builder
+WORKDIR /builder
+COPY . /builder/
+RUN yarn && yarn build
+
+FROM node:14-alpine as app
 WORKDIR /app
+COPY --from=builder /builder/build /app/build/
 RUN yarn global add serve
-COPY build/ /app/build/
-CMD [ "serve", "-s", "build" ]
+CMD [ "serve", "-s", "build", "-l", "$PORT" ]
