@@ -1,38 +1,39 @@
-import React, { useState } from "react";
-import videojs from "video.js";
-import VideoPlayer from '../components/VideoPlayer';
-import ChannelsList from "../components/ChannelsList";
-import { Box, Button, Drawer, Container, Stack } from "@mui/material";
+// eslint-disable-next-line no-use-before-define
+import React, { useState } from 'react'
+import videojs from 'video.js'
+import VideoPlayer from '../components/VideoPlayer'
+import ChannelsList from '../components/ChannelsList'
+import { Box, Button, Drawer, Container, Stack } from '@mui/material'
 
 const Home: React.FC<{}> = () => {
-    const [drawerState, setDrawerState] = useState(false);
-    const [vidOptions, setVidOptions] = React.useState<videojs.PlayerOptions>({
+  const [drawerState, setDrawerState] = useState(false)
+  const [vidOptions, setVidOptions] = React.useState<videojs.PlayerOptions>({
+    sources: [
+      // {
+      //     src: "https://cdn.hkdtmb.com/hls/99/index.m3u8",
+      //     type: 'application/x-mpegURL'
+      // }
+    ]
+  })
+
+  React.useEffect(() => {
+    console.log(vidOptions)
+  }, [vidOptions])
+
+  const setVideoSrc = (src: string) => {
+    setVidOptions(
+      {
         sources: [
-            // {
-            //     src: "https://cdn.hkdtmb.com/hls/99/index.m3u8",
-            //     type: 'application/x-mpegURL'
-            // }
+          {
+            src,
+            type: 'application/x-mpegURL'
+          }
         ]
-    });
+      }
+    )
+  }
 
-    React.useEffect(() => {
-        console.log(vidOptions)
-    }, [vidOptions]);
-
-    const setVideoSrc = (src: string) => {
-        setVidOptions(
-            {
-                sources: [
-                    {
-                        src,
-                        type: 'application/x-mpegURL'
-                    }
-                ]
-            }
-        );
-    };
-
-    return (
+  return (
         <>
             <Stack
                 justifyContent={'space-around'}
@@ -57,7 +58,7 @@ const Home: React.FC<{}> = () => {
                 </Drawer>
             </Stack>
         </>
-    )
+  )
 }
 
-export default Home;
+export default Home

@@ -1,9 +1,9 @@
-import React from 'react';
+// eslint-disable-next-line no-use-before-define
+import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Home from './pages/Home';
+import Home from './pages/Home'
 
-function App() {
-
+function App () {
   return (
     <div className="App">
       <header className="App-header">
@@ -16,7 +16,7 @@ function App() {
         </Router>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
