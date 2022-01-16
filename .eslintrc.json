@@ -21,5 +21,6 @@
     ],
     "ignorePatterns": ["*.test.tsx"],
     "rules": {
+        "react/prop-types": 0
     }
 }
