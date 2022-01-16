@@ -1,7 +1,7 @@
 FROM node:14-alpine AS builder
 WORKDIR /builder
 COPY . /builder/
-RUN echo $ENV_FILE | base64 --decode > /builder/.env
+RUN echo $ENV_FILE | base64 -d > /builder/.env
 RUN yarn && yarn build
 
 FROM node:14-alpine as app
