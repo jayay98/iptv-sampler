@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import videojs from 'video.js'
 import VideoPlayer from '../components/VideoPlayer'
 import ChannelsList from '../components/ChannelsList'
-import { Box, Button, Drawer, Container, Stack } from '@mui/material'
+import { Box, Drawer, Container, Stack, AppBar, Toolbar, IconButton, Typography } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
 
 const Home: React.FC<{}> = () => {
   const [drawerState, setDrawerState] = useState(false)
@@ -34,30 +35,44 @@ const Home: React.FC<{}> = () => {
   }
 
   return (
-        <>
-            <Stack
-                justifyContent={'space-around'}
-                alignItems={'center'}
-                spacing={2}
-            >
-                <Container sx={{ width: 0.5, margin: 5 }}>
-                    <VideoPlayer options={vidOptions} />
-                </Container>
-                <Button
-                    onClick={(event) => setDrawerState(true)}
-                >Open</Button>
+    <>
+      <AppBar position='static'>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Sampler
+          </Typography>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={(event) => setDrawerState(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Stack
+        justifyContent={'space-around'}
+        alignItems={'center'}
+        spacing={2}
+      >
+        <Container sx={{ width: 0.5, margin: 5 }}>
+          <VideoPlayer options={vidOptions} />
+        </Container>
 
-                <Drawer
-                    anchor={'right'}
-                    open={drawerState}
-                    onClose={(event) => setDrawerState(false)}
-                >
-                    <Box>
-                        <ChannelsList onItemClick={setVideoSrc} />
-                    </Box>
-                </Drawer>
-            </Stack>
-        </>
+        <Drawer
+          anchor={'right'}
+          open={drawerState}
+          onClose={(event) => setDrawerState(false)}
+        >
+          <Box>
+            <ChannelsList onItemClick={setVideoSrc} />
+          </Box>
+        </Drawer>
+      </Stack>
+    </>
   )
 }
 
