@@ -7,7 +7,6 @@ import { useFirestoreQuery } from '../hooks/Firestore'
 import { Channel } from './interfaces'
 import DeleteIcon from '@mui/icons-material/Delete'
 
-
 export interface IChannelsListProp {
     onItemClick: (url: string) => void
 }
@@ -53,7 +52,6 @@ const ChannelsList: React.FC<IChannelsListProp> = ({ onItemClick }) => {
             </ListItem>
     )
   })
-
 
   return (
         <List>
