@@ -13,7 +13,7 @@ const firebaseConfig = {
 }
 initializeApp(firebaseConfig)
 
-export const useFirestoreQuery = (collectionPath: string): [firestore.DocumentData[], React.Dispatch<React.SetStateAction<firestore.QueryConstraint>>] => {
+export const useFirestoreQuery = (collectionPath: string): [firestore.DocumentData[], firestore.QueryConstraint, React.Dispatch<React.SetStateAction<firestore.QueryConstraint>>] => {
   const [snapshot, setSnapshot] = useState<firestore.DocumentData[]>([])
 
   // TODO - move this sibling level to nav pane
@@ -30,7 +30,8 @@ export const useFirestoreQuery = (collectionPath: string): [firestore.DocumentDa
     unsubscribeRef.current = firestore.onSnapshot(firestore.query(col, filter, firestore.limit(10)), (snap) => {
       setSnapshot(snap.docs.map((doc) => doc.data()))
     })
+    console.log(filter)
   }, [filter])
 
-  return [snapshot, setFilter]
+  return [snapshot, filter, setFilter]
 }

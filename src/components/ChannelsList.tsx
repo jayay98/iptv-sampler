@@ -1,39 +1,67 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { List, ListItemButton, ListItemText, Chip, ListSubheader } from '@mui/material'
+import { List, ListItem, ListItemButton, ListItemText, Chip, ListSubheader, IconButton } from '@mui/material'
 import { where } from 'firebase/firestore'
 import { useFirestoreQuery } from '../hooks/Firestore'
 import { Channel } from './interfaces'
-import { countries } from './constants'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 export interface IChannelsListProp {
     onItemClick: (url: string) => void
 }
 
 const ChannelsList: React.FC<IChannelsListProp> = ({ onItemClick }) => {
-  const [data, setFilter] = useFirestoreQuery('iptv')
+  const [data, , setQueryFilter] = useFirestoreQuery('iptv')
+  const [channelFilter, setChannelFilter] = React.useState<string>('')
 
   const selectedChannels = (data as Channel[]).sort((a, b) => a.tvg.name.localeCompare(b.tvg.name))
   const channelItems = selectedChannels.map((ch) => {
-    const labels = ch.categories.map((cat) => <Chip label={cat.name} key={ch.name + cat.slug}/>)
+    const catLabels = ch.categories.map(
+      (cat) => <Chip
+                label={cat.name}
+                key={ch.name + cat.slug}
+                onClick={() => {
+                  setQueryFilter(where('categories', 'array-contains', cat))
+                  setChannelFilter('Category contains ' + cat.name)
+                }}
+            />
+    )
+    const langLabels = ch.languages.map(
+      (lang) => <Chip
+                label={lang.name}
+                key={lang.name + lang.code}
+                onClick={() => {
+                  setQueryFilter(where('languages', 'array-contains', lang))
+                  setChannelFilter('Language contains ' + lang.name)
+                } }
+            />
+    )
+    const labels = [...catLabels, ...langLabels]
 
     return (
-            <ListItemButton
-                key={uuidv4()}
-                onClick={() => { onItemClick(ch.url); setFilter(where('countries', 'array-contains', countries.UA)) }}
-            >
-                <ListItemText
-                    primary={ch.name}
-                    secondary={labels}
-                />
-            </ListItemButton>
+            <ListItem key={uuidv4()}>
+                <ListItemButton
+                    onClick={() => { onItemClick(ch.url) }}
+                >
+                    <ListItemText
+                        primary={ch.name}
+                    />
+                </ListItemButton>
+                {labels}
+            </ListItem>
     )
   })
 
   return (
         <List>
-            <ListSubheader>Channels</ListSubheader>
+            <ListSubheader>
+                <p>Channels</p>
+                <ListItem secondaryAction={<IconButton onClick={() => {
+                  setQueryFilter(where('url', '!=', null))
+                  setChannelFilter('')
+                } }><DeleteIcon /></IconButton>}>Filters: {channelFilter} </ListItem>
+            </ListSubheader>
             {channelItems}
         </List>
   )
