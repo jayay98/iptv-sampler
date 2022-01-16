@@ -16,15 +16,15 @@ const readDB = async () => {
   const col = firestore.collection(db, 'iptv').withConverter({
     fromFirestore: (snapshot, options) => {
       const data = snapshot.data(options)
-      return data.countries.map(c => JSON.stringify(c))
+      return data.countries.map(c => JSON.stringify(c, Object.keys(c).sort()))
     }
   })
 
   const dataaaa = await firestore.getDocs(col)
-  let countries = dataaaa.docs.map((s) => s.data()).flat()
-  countries = [...new Set(countries)]
+  const countries = dataaaa.docs.map((s) => s.data()).flat()
+  const countriesUnique = [...new Set(countries)]
 
-  return countries.map((c) => JSON.parse(c))
+  return JSON.stringify(countriesUnique.map((c) => JSON.parse(c)))
 }
 
 const updateDB = async (data) => {
