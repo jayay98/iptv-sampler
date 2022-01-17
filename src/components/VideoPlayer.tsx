@@ -2,8 +2,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
-import { Button, TableRow, TableCell, TableHead, Table, TableBody } from '@mui/material'
+import { Button } from '@mui/material'
 import SpectrumAnalyzer from './SpectrumAnalyzer'
+import AudioArchives from './AudioArchives'
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
@@ -107,22 +108,7 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
       <Button onClick={startRecording}>Start</Button>
       <Button onClick={stopRecording}>End</Button>
       <br />
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell align='left'>Audio</TableCell>
-            <TableCell align='left'>Download</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {audioUrls.map((url, i) => (
-            <TableRow key={`audio-${i}`}>
-              <TableCell><audio controls src={url} /></TableCell>
-              <TableCell><a href={url} download={`${i}.ogg`}>Download</a></TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <AudioArchives audioUrls={audioUrls} />
     </>
   )
 }
