@@ -1,8 +1,11 @@
 FROM node:14-alpine AS builder
+ARG ENV_FILE
+ENV ENV_FILE=$ENV_FILE
 WORKDIR /builder
 COPY . /builder/
 RUN echo $ENV_FILE | base64 -d > /builder/.env
-RUN yarn && yarn build
+RUN cat /builder/.env
+RUN yarn --network-timeout 100000  && yarn build
 
 FROM node:14-alpine as app
 WORKDIR /app
