@@ -2,21 +2,20 @@
 import React, { useEffect } from 'react'
 
 interface ISpectrumAnalyserProps {
-    analyser: AnalyserNode
+    analyserRef: React.MutableRefObject<AnalyserNode>
     canvasRef: React.RefObject<HTMLCanvasElement>
 }
 
-const SpectrumAnalyzer: React.FC<ISpectrumAnalyserProps> = ({ canvasRef, analyser }) => {
-  const bufferLength = analyser.frequencyBinCount
+const SpectrumAnalyzer: React.FC<ISpectrumAnalyserProps> = ({ canvasRef, analyserRef }) => {
+  const bufferLength = analyserRef.current.frequencyBinCount
   const dataArray = new Uint8Array(bufferLength)
-  analyser.getByteTimeDomainData(dataArray)
 
-  function draw (analyser: AnalyserNode, canvasCtx: CanvasRenderingContext2D) {
+  function draw (canvasCtx: CanvasRenderingContext2D) {
     const WIDTH = canvasRef.current!.width
     const HEIGHT = canvasRef.current!.height
-    requestAnimationFrame(() => draw(analyser, canvasCtx))
+    requestAnimationFrame(() => draw(canvasCtx))
 
-    analyser.getByteFrequencyData(dataArray)
+    analyserRef.current.getByteFrequencyData(dataArray)
 
     canvasCtx.fillStyle = 'rgb(0, 0, 0)'
     canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
@@ -38,9 +37,9 @@ const SpectrumAnalyzer: React.FC<ISpectrumAnalyserProps> = ({ canvasRef, analyse
   useEffect(
     () => {
       if (canvasRef.current) {
-        draw(analyser, canvasRef.current.getContext('2d')!)
+        draw(canvasRef.current.getContext('2d')!)
       }
-    }
+    }, []
   )
 
   return (
