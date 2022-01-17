@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   heroku: circleci/heroku@1.2.2
+  slack: circleci/slack@4.1
 
 jobs:
   build:
@@ -24,6 +25,12 @@ jobs:
           command: >
             heroku container:push -a $HEROKU_APP_NAME --arg ENV_FILE=$ENV_FILE --recursive
           name: Push Docker image to Heroku
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
       - heroku/release-docker-image:
           no_output_timeout: 3m
 
