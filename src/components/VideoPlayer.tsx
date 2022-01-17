@@ -36,9 +36,6 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
 
   const analyser = audioCtxRef.current.createAnalyser()
   analyser.fftSize = 256
-  const bufferLength = analyser.frequencyBinCount
-  const dataArray = new Uint8Array(bufferLength)
-  analyser.getByteTimeDomainData(dataArray)
 
   const recordingStream = audioCtxRef.current.createMediaStreamDestination()
   const recorder = new MediaRecorder(recordingStream.stream)
