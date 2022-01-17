@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import { Button, TableRow, TableCell, TableHead, Table, TableBody } from '@mui/material'
+import SpectrumAnalyzer from './SpectrumAnalyzer'
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
@@ -24,7 +25,6 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
   const sourceRef = useRef<MediaElementAudioSourceNode>()
   // References For Waveform visualizer
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const canvasCtxRef = useRef<CanvasRenderingContext2D>()
   // References For Video Player
   const videoNodeRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -74,11 +74,6 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
         console.log('MediaElementSourceNode connected to destination')
       }
 
-      if (canvasRef.current) {
-        canvasCtxRef.current = canvasRef.current.getContext('2d')!
-        draw(canvasCtxRef.current)
-      }
-
       return () => {
         console.log('disconnect')
         sourceRef.current?.disconnect()
@@ -104,46 +99,13 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
         player.autoplay(true)
         player.src(options.sources!)
       }
-
-      if (canvasRef.current) {
-        draw(canvasRef.current.getContext('2d')!)
-      }
     }, [options]
   )
-
-  /**
-   * Canvas Draw function
-   * TODO - consider isolate this
-   * @param canvasCtx
-   */
-  function draw (canvasCtx: CanvasRenderingContext2D) {
-    const WIDTH = canvasRef.current!.width
-    const HEIGHT = canvasRef.current!.height
-    requestAnimationFrame(() => draw(canvasCtx))
-
-    analyser.getByteFrequencyData(dataArray)
-
-    canvasCtx.fillStyle = 'rgb(0, 0, 0)'
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
-
-    const barWidth = (WIDTH / bufferLength) * 2.5
-    let barHeight: number
-    let x = 0
-
-    for (let i = 0; i < bufferLength; i++) {
-      barHeight = dataArray[i] / 2
-
-      canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + x + ',50)'
-      canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight)
-
-      x += barWidth + 1
-    }
-  }
 
   return (
     <>
       <video ref={videoNodeRef} className='video-js vjs-big-play-centered' id='playerElement' />
-      <canvas ref={canvasRef} style={{ width: '50%' }} />
+      <SpectrumAnalyzer analyser={analyser} canvasRef={canvasRef}/>
       <br />
       <Button onClick={startRecording}>Start</Button>
       <Button onClick={stopRecording}>End</Button>
