@@ -22,7 +22,7 @@ jobs:
           name: Login to Heroku Docker image registry
       - run:
           command: >
-            heroku container:push -a $IMAGE_NAME --arg ENV_FILE=$ENV_FILE --recursive
+            heroku container:push -a $HEROKU_APP_NAME --arg ENV_FILE=$ENV_FILE --recursive
           name: Push Docker image to Heroku
       - heroku/release-docker-image:
           no_output_timeout: 3m
