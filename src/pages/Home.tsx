@@ -17,10 +17,6 @@ const Home: React.FC<{}> = () => {
     ]
   })
 
-  React.useEffect(() => {
-    console.log(vidOptions)
-  }, [vidOptions])
-
   const setVideoSrc = (src: string) => {
     setVidOptions(
       {

@@ -30,7 +30,6 @@ export const useFirestoreQuery = (collectionPath: string): [firestore.DocumentDa
     unsubscribeRef.current = firestore.onSnapshot(firestore.query(col, filter, firestore.limit(10)), (snap) => {
       setSnapshot(snap.docs.map((doc) => doc.data()))
     })
-    console.log(filter)
   }, [filter])
 
   return [snapshot, filter, setFilter]
