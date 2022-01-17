@@ -157,10 +157,10 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
         </TableHead>
         <TableBody>
           {audioUrls.map((url, i) => (
-            <>
-              <TableCell><audio controls src={url} key={`audio-${i}`} /></TableCell>
+            <TableRow key={`audio-${i}`}>
+              <TableCell><audio controls src={url} /></TableCell>
               <TableCell><a href={url} download={`${i}.ogg`}>Download</a></TableCell>
-            </>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
