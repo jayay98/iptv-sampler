@@ -1,21 +1,39 @@
 // eslint-disable-next-line no-use-before-define
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import videojs from 'video.js'
 import VideoPlayer from '../components/VideoPlayer'
 import ChannelsList from '../components/ChannelsList'
 import { Box, Drawer, Container, Stack, AppBar, Toolbar, IconButton, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
+import WaveformVisualiser from '../components/WaveformVisualizer'
+import SpectrumAnalyzer from '../components/SpectrumAnalyzer'
+import AudioArchives from '../components/AudioArchives'
+import GainPanel from '../components/AudioEffects/GainPanel'
 
 const Home: React.FC<{}> = () => {
   const [drawerState, setDrawerState] = useState(false)
-  const [vidOptions, setVidOptions] = React.useState<videojs.PlayerOptions>({
-    sources: [
-      // {
-      //     src: "https://cdn.hkdtmb.com/hls/99/index.m3u8",
-      //     type: 'application/x-mpegURL'
-      // }
-    ]
-  })
+  const [vidOptions, setVidOptions] = useState<videojs.PlayerOptions>({ sources: [] }) // States for audio outputs
+  const [audioUrls, setAudioUrls] = useState<string[]>([])
+
+  const audioCtxRef = useRef<AudioContext>(new AudioContext())
+  const bufferRef = useRef(audioCtxRef.current.createGain())
+  bufferRef.current.connect(audioCtxRef.current.destination)
+
+  // References For Waveform visualizer
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
+  const analyserRef = useRef<AnalyserNode>(audioCtxRef.current.createAnalyser())
+
+  const originalCanvasRef = useRef<HTMLCanvasElement>(null)
+  const originalWaveformCanvasRef = useRef<HTMLCanvasElement>(null)
+  const originalAnalyserRef = useRef<AnalyserNode>(audioCtxRef.current.createAnalyser())
+  const mediaSrcRef = useRef<MediaElementAudioSourceNode>()
+
+  // TODO - show these only when the video is playing (as a monitor)
+  analyserRef.current.fftSize = 256
+  originalAnalyserRef.current.fftSize = 256
+  bufferRef.current.connect(analyserRef.current)
+  mediaSrcRef.current?.connect(originalAnalyserRef.current)
 
   const setVideoSrc = (src: string) => {
     setVidOptions(
@@ -49,25 +67,60 @@ const Home: React.FC<{}> = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
+
       <Stack
         justifyContent={'space-around'}
         alignItems={'center'}
         spacing={2}
       >
         <Container sx={{ width: 0.5, margin: 5 }}>
-          <VideoPlayer options={vidOptions} />
+          <VideoPlayer
+            options={vidOptions}
+            audioContext={audioCtxRef}
+            bufferRef={bufferRef}
+            onRecCompleted={(url: string) => setAudioUrls([...audioUrls, url])}
+            mediaSrcRef={mediaSrcRef}
+          />
+        </Container>
+        <Container sx={{ width: 0.5, margin: 5 }}>
+          <SpectrumAnalyzer analyserRef={originalAnalyserRef} canvasRef={originalCanvasRef} />
+          <WaveformVisualiser analyserRef={originalAnalyserRef} canvasRef={originalWaveformCanvasRef} />
+          <Typography variant={'subtitle1'}>from video source</Typography>
+        </Container>
+        <Container sx={{ width: 0.5, margin: 5 }}>
+          <SpectrumAnalyzer analyserRef={analyserRef} canvasRef={canvasRef} />
+          <WaveformVisualiser analyserRef={analyserRef} canvasRef={waveformCanvasRef} />
+          <Typography variant={'subtitle1'}>from output</Typography>
         </Container>
 
-        <Drawer
-          anchor={'right'}
-          open={drawerState}
-          onClose={(event) => setDrawerState(false)}
-        >
-          <Box>
-            <ChannelsList onItemClick={setVideoSrc} />
-          </Box>
-        </Drawer>
+        <Stack direction={'row'} sx={{ width: 0.5, margin: 5 }}>
+          <GainPanel gainRef={bufferRef}/>
+        </Stack>
+
+        <AudioArchives
+          audioUrls={audioUrls}
+          onPlayCb={(id: string) => {
+            audioCtxRef.current.createMediaElementSource(document.querySelector('audio#' + id)! as HTMLAudioElement).connect(
+              bufferRef.current
+            )
+          }}
+          onPauseCb={(id: string) => {
+            bufferRef.current.disconnect()
+            bufferRef.current.connect(audioCtxRef.current.destination)
+            bufferRef.current.connect(analyserRef.current)
+          }}
+        />
       </Stack>
+
+      <Drawer
+        anchor={'right'}
+        open={drawerState}
+        onClose={(event) => setDrawerState(false)}
+      >
+        <Box>
+          <ChannelsList onItemClick={setVideoSrc} />
+        </Box>
+      </Drawer>
     </>
   )
 }

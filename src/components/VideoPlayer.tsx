@@ -1,14 +1,15 @@
 // eslint-disable-next-line no-use-before-define
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, createRef } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import { Button } from '@mui/material'
-import SpectrumAnalyzer from './SpectrumAnalyzer'
-import AudioArchives from './AudioArchives'
-import WaveformVisualiser from './WaveformVIsualizer'
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
+  audioContext: React.MutableRefObject<AudioContext>
+  bufferRef: React.MutableRefObject<GainNode>
+  mediaSrcRef?: React.MutableRefObject<MediaElementAudioSourceNode | undefined>
+  onRecCompleted: (url: string) => void
 }
 
 const initialOptions: videojs.PlayerOptions = {
@@ -21,43 +22,25 @@ const initialOptions: videojs.PlayerOptions = {
   }
 }
 
-const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
-  // References For Audio elements
-  const audioCtxRef = useRef<AudioContext>(new AudioContext())
-  const [sourceRef, setSourceRef] = useState<MediaElementAudioSourceNode>()
-  const setMediaAsSrc = (el: HTMLMediaElement) => {
-    setSourceRef(audioCtxRef.current.createMediaElementSource(el))
-  }
-
-  // References For Waveform visualizer
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
-  const analyserRef = useRef<AnalyserNode>(audioCtxRef.current.createAnalyser())
-  analyserRef.current.fftSize = 256
-  const emptyGainNode = useRef(audioCtxRef.current.createGain())
-  emptyGainNode.current.connect(analyserRef.current)
-  emptyGainNode.current.connect(audioCtxRef.current.destination)
+const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options, audioContext, bufferRef, onRecCompleted, mediaSrcRef }) => {
   // References For Video Player
-  const videoNodeRef = useRef<HTMLVideoElement>(null)
+  const videoNodeRef = createRef<HTMLVideoElement>()
+  const mediaSourceRef = mediaSrcRef || useRef<MediaElementAudioSourceNode>()
   const playerRef = useRef<videojs.Player>()
-  // States for audio outputs
-  const [audioUrls, setAudioUrls] = useState<string[]>([])
-  const addAudioUrl = (url: string) => {
-    setAudioUrls([...audioUrls, url])
-  }
 
-  const recordingStream = audioCtxRef.current.createMediaStreamDestination()
+  const recordingStream = audioContext.current.createMediaStreamDestination()
   const recorder = new MediaRecorder(recordingStream.stream)
   const startRecording = () => {
-    sourceRef?.connect(recordingStream)
+    bufferRef.current.connect(recordingStream)
     recorder.start()
   }
   const stopRecording = () => {
     recorder.addEventListener('dataavailable', (e) => {
       const url = URL.createObjectURL(e.data)
-      addAudioUrl(url)
+      onRecCompleted(url)
     })
     recorder.stop()
+    bufferRef.current.disconnect(recordingStream)
   }
 
   /**
@@ -68,28 +51,26 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
    */
   useEffect(
     () => {
-      if (videoNodeRef.current) {
-        // Only executed in the beiginning
-        if (sourceRef == null) {
-          setMediaAsSrc(videoNodeRef.current as HTMLMediaElement)
-          console.log('MediaElementSourceNode created')
-        }
+      // Only executed in the beiginning
+      if (mediaSourceRef.current == null) {
+        mediaSourceRef.current = audioContext.current.createMediaElementSource(videoNodeRef.current as HTMLMediaElement)
+        console.log('MediaElementSourceNode created')
       }
     }
   )
 
   useEffect(
     () => {
-      if (sourceRef) {
-        sourceRef.connect(emptyGainNode.current)
+      if (mediaSourceRef.current) {
+        mediaSourceRef.current.connect(bufferRef.current)
         console.log('MediaElementSourceNode connected to destination')
       }
 
       return () => {
         console.log('disconnect')
-        sourceRef?.disconnect(emptyGainNode.current)
+        mediaSourceRef.current?.disconnect(bufferRef.current)
       }
-    }, [sourceRef]
+    }, [mediaSourceRef]
   )
 
   /**
@@ -116,25 +97,9 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
   return (
     <>
       <video ref={videoNodeRef} className='video-js vjs-big-play-centered' id='playerElement' />
-      <SpectrumAnalyzer analyserRef={analyserRef} canvasRef={canvasRef} />
-      <WaveformVisualiser analyserRef={analyserRef} canvasRef={waveformCanvasRef} />
       <br />
       <Button onClick={startRecording}>Start</Button>
       <Button onClick={stopRecording}>End</Button>
-      <br />
-      <AudioArchives
-        audioUrls={audioUrls}
-        onPlayCb={
-          (id: string) => {
-            setMediaAsSrc(document.querySelector('audio#' + id)! as HTMLAudioElement)
-          }
-        }
-        onPauseCb={
-          (id: string) => {
-            setMediaAsSrc(videoNodeRef.current as HTMLMediaElement)
-          }
-        }
-      />
     </>
   )
 }
