@@ -7,7 +7,7 @@ import { Button } from '@mui/material'
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
   audioContext: React.MutableRefObject<AudioContext>
-  bufferRef: React.MutableRefObject<GainNode>
+  bufferRef: React.MutableRefObject<AudioNode>
   mediaSrcRef?: React.MutableRefObject<MediaElementAudioSourceNode | undefined>
   onRecCompleted: (url: string) => void
 }

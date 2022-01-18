@@ -3,14 +3,14 @@ import React from 'react'
 import { Slider, Paper, Stack, Typography } from '@mui/material'
 import VolumeUp from '@mui/icons-material/VolumeUp'
 
-interface IGainPanelProps {
-    gainRef: React.MutableRefObject<GainNode>
+interface IStereoPannerPanelProps {
+    stereoPannerRef: React.MutableRefObject<StereoPannerNode>
 }
 
-const GainPanel: React.FC<IGainPanelProps> = ({ gainRef }) => {
-  const ctx = gainRef.current.context
+const StereoPannerPanel: React.FC<IStereoPannerPanelProps> = ({ stereoPannerRef }) => {
+  const ctx = stereoPannerRef.current.context
   const setGain = (val: number) => {
-    gainRef.current.gain.setValueAtTime(val, ctx.currentTime)
+    stereoPannerRef.current.pan.setValueAtTime(val, ctx.currentTime)
   }
 
   return (
@@ -23,19 +23,19 @@ const GainPanel: React.FC<IGainPanelProps> = ({ gainRef }) => {
                 sx={{ padding: 3 }}
             >
                 <Typography variant={'h5'}>
-                    Gain
+                    Stereo Pan
                 </Typography>
                 <Typography id="input-slider" gutterBottom>
-                    Volume
+                    Pan
                 </Typography>
                 <VolumeUp />
                 <Slider
-                    defaultValue={gainRef.current.gain.value}
+                    defaultValue={stereoPannerRef.current.pan.value}
                     onChange={(ev, val) => setGain(val as number) }
                     valueLabelDisplay={'auto'}
-                    max={10}
-                    min={0.1}
-                    step={0.01}
+                    max={stereoPannerRef.current.pan.maxValue}
+                    min={stereoPannerRef.current.pan.minValue}
+                    step={0.1}
                     sx={{ width: 0.8 }}
                 />
             </Stack>
@@ -43,4 +43,4 @@ const GainPanel: React.FC<IGainPanelProps> = ({ gainRef }) => {
   )
 }
 
-export default GainPanel
+export default StereoPannerPanel

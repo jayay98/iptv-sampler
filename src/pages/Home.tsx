@@ -9,6 +9,9 @@ import WaveformVisualiser from '../components/WaveformVisualizer'
 import SpectrumAnalyzer from '../components/SpectrumAnalyzer'
 import AudioArchives from '../components/AudioArchives'
 import GainPanel from '../components/AudioEffects/GainPanel'
+import StereoPannerPanel from '../components/AudioEffects/StereoPannerPanel'
+import DynamicCompressorPanel from '../components/AudioEffects/DynamicsCompresserPanel'
+import BiquadFilterPanel from '../components/AudioEffects/BiquadFilterPanel'
 
 const Home: React.FC<{}> = () => {
   const [drawerState, setDrawerState] = useState(false)
@@ -28,11 +31,20 @@ const Home: React.FC<{}> = () => {
   const originalWaveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const originalAnalyserRef = useRef<AnalyserNode>(audioCtxRef.current.createAnalyser())
   const mediaSrcRef = useRef<MediaElementAudioSourceNode>()
+  const pannerRef = useRef<StereoPannerNode>(audioCtxRef.current.createStereoPanner())
+  const compressorRef = useRef<DynamicsCompressorNode>(audioCtxRef.current.createDynamicsCompressor())
+  const filterRef = useRef<BiquadFilterNode>(audioCtxRef.current.createBiquadFilter())
 
   // TODO - show these only when the video is playing (as a monitor)
   analyserRef.current.fftSize = 256
   originalAnalyserRef.current.fftSize = 256
-  bufferRef.current.connect(analyserRef.current)
+
+  const effects: React.MutableRefObject<AudioNode>[] = [filterRef, compressorRef, pannerRef, bufferRef, analyserRef]
+  effects.forEach((effect, i) => {
+    if (i !== effects.length - 1) {
+      effects[i].current.connect(effects[i + 1].current)
+    }
+  })
   mediaSrcRef.current?.connect(originalAnalyserRef.current)
 
   const setVideoSrc = (src: string) => {
@@ -77,7 +89,7 @@ const Home: React.FC<{}> = () => {
           <VideoPlayer
             options={vidOptions}
             audioContext={audioCtxRef}
-            bufferRef={bufferRef}
+            bufferRef={pannerRef}
             onRecCompleted={(url: string) => setAudioUrls([...audioUrls, url])}
             mediaSrcRef={mediaSrcRef}
           />
@@ -93,7 +105,10 @@ const Home: React.FC<{}> = () => {
           <Typography variant={'subtitle1'}>from output</Typography>
         </Container>
 
-        <Stack direction={'row'} sx={{ width: 0.5, margin: 5 }}>
+        <Stack direction={'row'} sx={{ margin: 5 }} spacing={3}>
+          <BiquadFilterPanel filterRef={filterRef} />
+          <DynamicCompressorPanel compressorRef={compressorRef} />
+          <StereoPannerPanel stereoPannerRef={pannerRef} />
           <GainPanel gainRef={bufferRef}/>
         </Stack>
 
