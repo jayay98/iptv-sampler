@@ -5,7 +5,7 @@ import VideoPlayer from '../components/VideoPlayer'
 import ChannelsList from '../components/ChannelsList'
 import { Box, Drawer, Container, Stack, AppBar, Toolbar, IconButton, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import WaveformVisualiser from '../components/WaveformVisualizer'
+import WaveformPlot from '../components/WaveformPlot'
 import SpectrumAnalyzer from '../components/SpectrumAnalyzer'
 import AudioArchives from '../components/AudioArchives'
 import GainPanel from '../components/AudioEffects/GainPanel'
@@ -96,12 +96,12 @@ const Home: React.FC<{}> = () => {
         </Container>
         <Container sx={{ width: 0.5, margin: 5 }}>
           <SpectrumAnalyzer analyserRef={originalAnalyserRef} canvasRef={originalCanvasRef} />
-          <WaveformVisualiser analyserRef={originalAnalyserRef} canvasRef={originalWaveformCanvasRef} />
+          <WaveformPlot analyserRef={originalAnalyserRef} canvasRef={originalWaveformCanvasRef} />
           <Typography variant={'subtitle1'}>from video source</Typography>
         </Container>
         <Container sx={{ width: 0.5, margin: 5 }}>
           <SpectrumAnalyzer analyserRef={analyserRef} canvasRef={canvasRef} />
-          <WaveformVisualiser analyserRef={analyserRef} canvasRef={waveformCanvasRef} />
+          <WaveformPlot analyserRef={analyserRef} canvasRef={waveformCanvasRef} />
           <Typography variant={'subtitle1'}>from output</Typography>
         </Container>
 

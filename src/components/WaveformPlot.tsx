@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react'
 
-interface IWaveformVisualizerProps {
+interface IWaveformPlotProps {
     analyserRef: React.MutableRefObject<AnalyserNode>
     canvasRef: React.RefObject<HTMLCanvasElement>
 }
 
-const WaveformVisualiser: React.FC<IWaveformVisualizerProps> = ({ canvasRef, analyserRef }) => {
+const WaveformPlot: React.FC<IWaveformPlotProps> = ({ canvasRef, analyserRef }) => {
   const bufferLength = analyserRef.current.frequencyBinCount
   const dataArray = new Uint8Array(bufferLength)
 
@@ -61,4 +61,4 @@ const WaveformVisualiser: React.FC<IWaveformVisualizerProps> = ({ canvasRef, ana
   )
 }
 
-export default WaveformVisualiser
+export default WaveformPlot
