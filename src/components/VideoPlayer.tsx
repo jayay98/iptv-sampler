@@ -5,6 +5,7 @@ import 'video.js/dist/video-js.css'
 import { Button } from '@mui/material'
 import SpectrumAnalyzer from './SpectrumAnalyzer'
 import AudioArchives from './AudioArchives'
+import WaveformVisualiser from './WaveformVIsualizer'
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
@@ -30,8 +31,12 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
 
   // References For Waveform visualizer
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const waveformCanvasRef = useRef<HTMLCanvasElement>(null)
   const analyserRef = useRef<AnalyserNode>(audioCtxRef.current.createAnalyser())
   analyserRef.current.fftSize = 256
+  const emptyGainNode = useRef(audioCtxRef.current.createGain())
+  emptyGainNode.current.connect(analyserRef.current)
+  emptyGainNode.current.connect(audioCtxRef.current.destination)
   // References For Video Player
   const videoNodeRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -76,14 +81,13 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
   useEffect(
     () => {
       if (sourceRef) {
-        sourceRef.connect(audioCtxRef.current.destination)
-        sourceRef.connect(analyserRef.current)
+        sourceRef.connect(emptyGainNode.current)
         console.log('MediaElementSourceNode connected to destination')
       }
 
       return () => {
         console.log('disconnect')
-        sourceRef?.disconnect()
+        sourceRef?.disconnect(emptyGainNode.current)
       }
     }, [sourceRef]
   )
@@ -113,6 +117,7 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
     <>
       <video ref={videoNodeRef} className='video-js vjs-big-play-centered' id='playerElement' />
       <SpectrumAnalyzer analyserRef={analyserRef} canvasRef={canvasRef} />
+      <WaveformVisualiser analyserRef={analyserRef} canvasRef={waveformCanvasRef} />
       <br />
       <Button onClick={startRecording}>Start</Button>
       <Button onClick={stopRecording}>End</Button>
