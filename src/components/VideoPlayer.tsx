@@ -1,8 +1,9 @@
 // eslint-disable-next-line no-use-before-define
-import React, { useEffect, useRef, createRef } from 'react'
+import React, { useEffect, useRef, createRef, useState } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import { Button } from '@mui/material'
+import RecordingStatus from './RecordingStatus'
 
 interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
@@ -28,19 +29,23 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options, audioContext, buffe
   const mediaSourceRef = mediaSrcRef || useRef<MediaElementAudioSourceNode>()
   const playerRef = useRef<videojs.Player>()
 
-  const recordingStream = audioContext.current.createMediaStreamDestination()
-  const recorder = new MediaRecorder(recordingStream.stream)
+  const recordingStreamRef = useRef(audioContext.current.createMediaStreamDestination())
+  const recorder = useRef(new MediaRecorder(recordingStreamRef.current.stream))
+
+  const [isRecording, setIsRecording] = useState(false)
   const startRecording = () => {
-    bufferRef.current.connect(recordingStream)
-    recorder.start()
+    bufferRef.current.connect(recordingStreamRef.current)
+    recorder.current.start()
+    setIsRecording(true)
   }
   const stopRecording = () => {
-    recorder.addEventListener('dataavailable', (e) => {
+    recorder.current.addEventListener('dataavailable', (e) => {
       const url = URL.createObjectURL(e.data)
       onRecCompleted(url)
+      setIsRecording(false)
     })
-    recorder.stop()
-    bufferRef.current.disconnect(recordingStream)
+    recorder.current.stop()
+    bufferRef.current.disconnect(recordingStreamRef.current)
   }
 
   /**
@@ -100,6 +105,7 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options, audioContext, buffe
       <br />
       <Button onClick={startRecording}>Start</Button>
       <Button onClick={stopRecording}>End</Button>
+      <RecordingStatus isRecording={isRecording} />
     </>
   )
 }
