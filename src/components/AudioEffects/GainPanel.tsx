@@ -10,11 +10,11 @@ interface IGainPanelProps {
 const GainPanel: React.FC<IGainPanelProps> = ({ gainRef }) => {
   const ctx = gainRef.current.context
   const setGain = (val: number) => {
-    gainRef.current.gain.setValueAtTime(val, ctx.currentTime)
+    gainRef.current.gain.setValueAtTime(parseFloat((10 ** val).toFixed(2)), ctx.currentTime)
   }
 
   return (
-        <Paper elevation={6}>
+        <Paper elevation={6} sx={{ width: '100%' }}>
             <Stack
                 direction={'column'}
                 justifyContent={'space-around'}
@@ -26,17 +26,18 @@ const GainPanel: React.FC<IGainPanelProps> = ({ gainRef }) => {
                     Gain
                 </Typography>
                 <Typography id="input-slider" gutterBottom>
-                    Volume
+                    Gain
                 </Typography>
                 <VolumeUp />
                 <Slider
                     defaultValue={gainRef.current.gain.value}
                     onChange={(ev, val) => setGain(val as number) }
                     valueLabelDisplay={'auto'}
-                    max={10}
-                    min={0.1}
-                    step={0.01}
+                    max={2}
+                    min={-1}
+                    step={0.1}
                     sx={{ width: 0.8 }}
+                    scale={(val) => parseFloat((10 ** val).toFixed(2))}
                 />
             </Stack>
         </Paper>

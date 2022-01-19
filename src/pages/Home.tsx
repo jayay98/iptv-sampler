@@ -3,11 +3,8 @@ import React, { useState, useRef } from 'react'
 import videojs from 'video.js'
 import VideoPlayer from '../components/VideoPlayer'
 import ChannelsList from '../components/ChannelsList'
-import { Box, Drawer, Container, Stack, AppBar, Toolbar, IconButton, Typography, Snackbar, Grid, Tab, Tabs } from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import CloseIcon from '@mui/icons-material/Close'
-import InsightsIcon from '@mui/icons-material/Insights'
-import AudioFileIcon from '@mui/icons-material/AudioFile'
+import { Box, Drawer, Container, Stack, AppBar, Toolbar, IconButton, Typography, Snackbar, Grid, Tab, Tabs, Badge, List, ListItem, Collapse, ListItemButton, ListItemText } from '@mui/material'
+import { Equalizer, Insights, AudioFile, Close, Menu as MenuIcon, ExpandLess, ExpandMore } from '@mui/icons-material'
 import WaveformPlot from '../components/WaveformPlot'
 import SpectrumAnalyzer from '../components/SpectrumAnalyzer'
 import AudioArchives from '../components/AudioArchives'
@@ -50,7 +47,7 @@ function a11yProps (index: number) {
 const Home: React.FC<{}> = () => {
   const [drawerState, setDrawerState] = useState(false)
   const [vidOptions, setVidOptions] = useState<videojs.PlayerOptions>({ sources: [] }) // States for audio outputs
-  const [audioUrls, setAudioUrls] = useState<string[]>([])
+  const [audioUrls, setAudioUrls] = useState<{ audio: string, time: Date }[]>([])
   const [isSnackOpen, setSnackOpen] = useState(false)
   const [tab, setTab] = React.useState(0)
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -80,6 +77,7 @@ const Home: React.FC<{}> = () => {
   originalAnalyserRef.current.fftSize = 256
 
   const effects: React.MutableRefObject<AudioNode>[] = [filterRef, compressorRef, pannerRef, bufferRef, analyserRef]
+  const [panelOpen, setPanelOpen] = useState<boolean[]>([...new Array(effects.length - 1)].map((i) => false))
   effects.forEach((effect, i) => {
     if (i !== effects.length - 1) {
       effects[i].current.connect(effects[i + 1].current)
@@ -114,7 +112,7 @@ const Home: React.FC<{}> = () => {
       color="inherit"
       onClick={handleSnackClose}
     >
-      <CloseIcon fontSize="small" />
+      <Close fontSize="small" />
     </IconButton>
   )
 
@@ -123,7 +121,7 @@ const Home: React.FC<{}> = () => {
       <AppBar position='static'>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Sampler
+            Random IPTV Sampler
           </Typography>
           <IconButton
             size="large"
@@ -132,6 +130,7 @@ const Home: React.FC<{}> = () => {
             aria-label="menu"
             sx={{ mr: 2 }}
             onClick={(event) => setDrawerState(true)}
+            about={'channels'}
           >
             <MenuIcon />
           </IconButton>
@@ -149,11 +148,43 @@ const Home: React.FC<{}> = () => {
                 variant="scrollable"
                 scrollButtons="auto"
               >
-                <Tab icon={<InsightsIcon />} {...a11yProps(0)} />
-                <Tab icon={<AudioFileIcon />} {...a11yProps(1)} />
+                <Tab icon={<Equalizer />} {...a11yProps(0)} />
+                <Tab icon={<Insights />} {...a11yProps(1)} />
+                <Tab icon={<Badge badgeContent={audioUrls.length}><AudioFile /></Badge>} {...a11yProps(2)} />
               </Tabs>
             </Box>
             <TabPanel value={tab} index={0}>
+              <List>
+                {
+                  [
+                    <BiquadFilterPanel key={'Biquad Filter'} filterRef={filterRef} />,
+                    <DynamicCompressorPanel key={'Dynamic Compressor'} compressorRef={compressorRef} />,
+                    <StereoPannerPanel key={'Pan'} stereoPannerRef={pannerRef} />,
+                    <GainPanel key={'Gain'} gainRef={bufferRef} />
+                  ].map((el, i) => (
+                    <>
+                      <ListItemButton
+                        onClick={() => {
+                          const open = panelOpen[i]
+                          const newArr = panelOpen.slice(0)
+                          newArr[i] = !open
+                          setPanelOpen(newArr)
+                        }}
+                      >
+                        <ListItemText primary={el.key} />
+                        {panelOpen[i] ? <ExpandLess /> : <ExpandMore />}
+                      </ListItemButton>
+                      <Collapse key={i} in={panelOpen[i]} timeout="auto" unmountOnExit>
+                        <ListItem>
+                          {el}
+                        </ListItem>
+                      </Collapse>
+                    </>
+                  ))
+                }
+              </List>
+            </TabPanel>
+            <TabPanel value={tab} index={1}>
               <Stack direction={'column'} alignItems={'center'} justifyContent={'space-around'}>
                 <SpectrumAnalyzer analyserRef={originalAnalyserRef} canvasRef={originalCanvasRef} />
                 <WaveformPlot analyserRef={originalAnalyserRef} canvasRef={originalWaveformCanvasRef} />
@@ -163,7 +194,7 @@ const Home: React.FC<{}> = () => {
                 <Typography variant={'subtitle1'}>from output</Typography>
               </Stack>
             </TabPanel>
-            <TabPanel value={tab} index={1}>
+            <TabPanel value={tab} index={2}>
               Audio Archives
               <AudioArchives
                 audioUrls={audioUrls}
@@ -193,16 +224,10 @@ const Home: React.FC<{}> = () => {
                 options={vidOptions}
                 audioContext={audioCtxRef}
                 bufferRef={pannerRef}
-                onRecCompleted={(url: string) => { setAudioUrls([...audioUrls, url]); setSnackOpen(true) }}
+                onRecCompleted={(url: string) => { setAudioUrls([...audioUrls, { audio: url, time: new Date(Date.now()) }]); setSnackOpen(true) }}
                 mediaSrcRef={mediaSrcRef}
               />
             </Container>
-            <Stack direction={'row'} sx={{ margin: 5 }} spacing={3}>
-              <BiquadFilterPanel filterRef={filterRef} />
-              <DynamicCompressorPanel compressorRef={compressorRef} />
-              <StereoPannerPanel stereoPannerRef={pannerRef} />
-              <GainPanel gainRef={bufferRef} />
-            </Stack>
           </Stack>
         </Grid>
       </Grid>

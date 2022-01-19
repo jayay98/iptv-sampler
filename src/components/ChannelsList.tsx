@@ -54,7 +54,7 @@ const ChannelsList: React.FC<IChannelsListProp> = ({ onItemClick }) => {
   })
 
   return (
-        <List>
+        <List component={'div'}>
             <ListSubheader>
                 <p>Channels</p>
                 <ListItem secondaryAction={<IconButton onClick={() => {

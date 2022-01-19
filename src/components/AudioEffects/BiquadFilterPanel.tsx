@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-use-before-define
 import React from 'react'
 import { Slider, Paper, Stack, Typography, Select, InputLabel, MenuItem } from '@mui/material'
-import VolumeUp from '@mui/icons-material/VolumeUp'
 
 interface IBiquadFilterPanelProps {
     filterRef: React.MutableRefObject<BiquadFilterNode>
@@ -16,7 +15,7 @@ const BiquadFilterPanel: React.FC<IBiquadFilterPanelProps> = ({ filterRef }) => 
   }
 
   return (
-        <Paper elevation={6}>
+        <Paper elevation={6} sx={{ width: '100%' }}>
             <Stack
                 direction={'column'}
                 justifyContent={'space-around'}
@@ -27,7 +26,6 @@ const BiquadFilterPanel: React.FC<IBiquadFilterPanelProps> = ({ filterRef }) => 
                 <Typography variant={'h5'}>
                     BiquadFilter
                 </Typography>
-                <VolumeUp />
                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
                 <Select
                     labelId="demo-simple-select-label"

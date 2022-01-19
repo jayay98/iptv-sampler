@@ -16,7 +16,7 @@ const DynamicCompressorPanel: React.FC<IDynamicCompressorPanelProps> = ({ compre
   }
 
   return (
-        <Paper elevation={6}>
+        <Paper elevation={6} sx={{ width: '100%' }}>
             <Stack
                 direction={'column'}
                 justifyContent={'space-around'}

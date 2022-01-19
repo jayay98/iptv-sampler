@@ -14,7 +14,7 @@ const StereoPannerPanel: React.FC<IStereoPannerPanelProps> = ({ stereoPannerRef 
   }
 
   return (
-        <Paper elevation={6}>
+        <Paper elevation={6} sx={{ width: '100%' }}>
             <Stack
                 direction={'column'}
                 justifyContent={'space-around'}
