@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-use-before-define
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Sampler } from 'tone'
 import videojs from 'video.js'
 import VideoPlayer from '../components/VideoPlayer'
 import ChannelsList from '../components/ChannelsList'
@@ -12,6 +13,7 @@ import GainPanel from '../components/AudioEffects/GainPanel'
 import StereoPannerPanel from '../components/AudioEffects/StereoPannerPanel'
 import DynamicCompressorPanel from '../components/AudioEffects/DynamicsCompresserPanel'
 import BiquadFilterPanel from '../components/AudioEffects/BiquadFilterPanel'
+import SamplerModal from '../components/SamplerModal'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,11 +46,22 @@ function a11yProps (index: number) {
   }
 }
 
+const fromAudioUrls = (audioUrls: {audio: string, time: Date}[]) => {
+  if (audioUrls.length === 0) {
+    return {}
+  }
+  const keys = [...new Array(audioUrls.length)].map((_, i) => `A${i}`)
+  const sources = Object.fromEntries(keys.map((key, i) => [key, audioUrls[i].audio]))
+  console.log(sources)
+  return sources
+}
+
 const Home: React.FC<{}> = () => {
   const [drawerState, setDrawerState] = useState(false)
   const [vidOptions, setVidOptions] = useState<videojs.PlayerOptions>({ sources: [] }) // States for audio outputs
   const [audioUrls, setAudioUrls] = useState<{ audio: string, time: Date }[]>([])
   const [isSnackOpen, setSnackOpen] = useState(false)
+  const [isSamplerLoaded, setSamplerLoaded] = useState(false)
   const [tab, setTab] = React.useState(0)
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue)
@@ -57,6 +70,16 @@ const Home: React.FC<{}> = () => {
   const audioCtxRef = useRef<AudioContext>(new AudioContext())
   const bufferRef = useRef(audioCtxRef.current.createGain())
   bufferRef.current.connect(audioCtxRef.current.destination)
+  const samplerRef = useRef<Sampler>(new Sampler(fromAudioUrls(audioUrls), {
+    onload: () => {
+      console.log('Sampler Loaded')
+      setSamplerLoaded(true)
+    }
+  }))
+  useEffect(() => {
+    samplerRef.current = new Sampler(fromAudioUrls(audioUrls))
+    samplerRef.current.toDestination()
+  }, [audioUrls])
 
   // References For Waveform visualizer
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -224,10 +247,14 @@ const Home: React.FC<{}> = () => {
                 options={vidOptions}
                 audioContext={audioCtxRef}
                 bufferRef={pannerRef}
-                onRecCompleted={(url: string) => { setAudioUrls([...audioUrls, { audio: url, time: new Date(Date.now()) }]); setSnackOpen(true) }}
+                onRecCompleted={(url: string) => {
+                  setAudioUrls([...audioUrls, { audio: url, time: new Date(Date.now()) }])
+                  setSnackOpen(true)
+                }}
                 mediaSrcRef={mediaSrcRef}
               />
             </Container>
+            <SamplerModal audioUrls={audioUrls.map((obj) => obj.audio)} samplerRef={samplerRef} isSamplerLoaded={isSamplerLoaded} />
           </Stack>
         </Grid>
       </Grid>
