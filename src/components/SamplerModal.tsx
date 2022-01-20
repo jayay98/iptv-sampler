@@ -46,9 +46,7 @@ const SamplerModal: React.FC<ISamplerModalProps> = ({ audioUrls, samplerRef, isS
     const key = e.key
     try {
       const num = parseInt(key)
-      if (num <= Math.min(8, audioUrls.length)) {
-        onClick(num)
-      }
+      onClick(num)
     } catch {
       console.error(e)
     }
